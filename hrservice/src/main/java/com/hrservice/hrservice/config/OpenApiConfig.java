@@ -18,21 +18,22 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("HR Service API")
-                        .version("1.0.0")
-                        .description("HR Service API for HR Portal - Manages departments, leave types, and leave requests")
+                        .version("1.0")
+                        .description("HR Service API Documentation")
                         .contact(new Contact()
-                                .name("HR Portal Team")
-                                .email("hr@company.com"))
+                                .name("Your Name")
+                                .email("your.email@example.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
-                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication", new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")
-                                .description("Enter JWT token from auth-service")));
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                                        .in(SecurityScheme.In.HEADER)
+                                        .name("Authorization")));
     }
 }
-

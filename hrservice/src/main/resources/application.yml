@@ -1,10 +1,11 @@
 server:
   port: 8080
+
 spring:
   application:
     name: hrservice
   datasource:
-    url: jdbc:mysql://localhost:3306/hr-service?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/hr-service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
     username: root
     password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,10 +24,18 @@ auth-service:
   jwt:
     secret: your-super-secret-jwt-key-change-this-in-production
 
+# Springdoc OpenAPI Configuration
 springdoc:
   api-docs:
     path: /v3/api-docs
+    enabled: true
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
 
+# Actuator endpoints (optional)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

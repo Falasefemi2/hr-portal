@@ -2,6 +2,16 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserRole } from 'src/users/common/enums/role.enum';
+
+interface JwtPayload {
+  sub: string;
+  employeeId: string;
+  email: string;
+  role: UserRole;
+  departmentId: number;
+  isActive: boolean;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: JwtPayload) {
     // Ensure user is active
     if (!payload.isActive) {
       throw new UnauthorizedException('User account is deactivated');

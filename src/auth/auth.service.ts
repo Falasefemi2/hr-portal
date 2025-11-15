@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -17,10 +18,10 @@ import { UserRole } from 'src/users/common/enums/role.enum';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
     @InjectRepository(UserToken)
-    private userTokenRepository: Repository<UserToken>,
+    private readonly userTokenRepository: Repository<UserToken>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -82,6 +83,18 @@ export class AuthService {
     } catch (error) {
       return { valid: false, error: error.message };
     }
+  }
+
+  async getUsersByDepartment(departmentId: number) {
+    return this.usersService.findByDepartment(departmentId);
+  }
+
+  async getUserByEmployeeId(employeeId: string) {
+    const user = await this.usersService.findByEmployeeId(employeeId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   private async generateTokens(user: Omit<User, 'password'>) {

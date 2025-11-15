@@ -5,6 +5,8 @@ import {
   Get,
   UseGuards,
   Request,
+  Param,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,7 +26,7 @@ import { JwtAuthGuard } from 'src/common/decorators/jwt-auth.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @ApiOperation({
@@ -152,5 +154,49 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized - Invalid token' })
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('users/department/:departmentId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Get users by department',
+    description: 'Get all users in a specific department (HR and HOD only)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid token' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  async getUsersByDepartment(
+    @Request() req,
+    @Param('departmentId') departmentId: number,
+  ) {
+    if (req.user.role !== 'hr' && req.user.role !== 'hod') {
+      throw new ForbiddenException(
+        'Only HR and HOD can view users by department',
+      );
+    }
+    return this.authService.getUsersByDepartment(departmentId);
+  }
+
+  @Get('users/employee/:employeeId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Get user by employee ID',
+    description: 'Get user information by employee ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User retrieved successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Invalid token' })
+  async getUserByEmployeeId(@Param('employeeId') employeeId: string) {
+    return this.authService.getUserByEmployeeId(employeeId);
   }
 }

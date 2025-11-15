@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsEnum,
+  IsInt,
   IsOptional,
   IsString,
   MinLength,
@@ -22,6 +23,6 @@ export class CreateUserDto {
   role: UserRole;
 
   @IsOptional()
-  @IsString()
+  @IsInt()
   departmentId?: number;
 }

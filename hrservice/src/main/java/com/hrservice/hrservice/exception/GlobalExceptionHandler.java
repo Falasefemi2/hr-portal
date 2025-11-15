@@ -24,7 +24,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<Map<String, String>> handleSecurityException(SecurityException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", e.getMessage());
+        String message = e.getMessage();
+        // If it's an unauthorized error (no auth), return 401, otherwise 403
+        if (message != null && message.contains("Unauthorized")) {
+            error.put("error", message);
+            error.put("message", "Authentication required. Please provide a valid JWT token in the Authorization header.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        error.put("error", message);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
